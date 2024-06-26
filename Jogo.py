@@ -160,8 +160,6 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
             principal.append(dicionario[(j,j)])
             secundaria.append(dicionario[(tamanho + 1 - j,j)])
 
-        print(linha)
-
         if objetivo == 1:
             resultado_linha = verificar_lista(linha, objetivo)
             resultado_coluna = verificar_lista(coluna, objetivo)
