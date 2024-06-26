@@ -160,6 +160,8 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
             principal.append(dicionario[(j,j)])
             secundaria.append(dicionario[(tamanho + 1 - j,j)])
 
+        print(linha)
+
         if objetivo == 1:
             resultado_linha = verificar_lista(linha, objetivo)
             resultado_coluna = verificar_lista(coluna, objetivo)
@@ -168,7 +170,7 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
             if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
                 return (True,nome,jogador)
             else:
-                return (False,nome,jogador)
+                valor = (False,nome,jogador)
         elif objetivo == 2:
             resultado_linha = verificar_lista(linha, objetivo)
             resultado_coluna = verificar_lista(coluna, objetivo)
@@ -177,7 +179,7 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
             if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
                 return (True,nome,jogador)
             else:
-                return (False,nome,jogador)
+                valor = (False,nome,jogador)
         elif objetivo == 3:
             if linha[0] % 2 == 0 or coluna[0] % 2 == 0 or principal[0] % 2 == 0 or secundaria[0] % 2 == 0:
                 resultado_linha = verificar_lista(linha, objetivo)
@@ -187,7 +189,7 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
                 if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
                     return (True,nome,jogador)
                 else:
-                    return (False,nome,jogador)
+                    valor = (False,nome,jogador)
         else:
             if linha[0] % 2 != 0 or coluna[0] % 2 != 0 or principal[0] % 2 != 0 or secundaria[0] % 2 != 0:
                 resultado_linha = verificar_lista(linha, objetivo)
@@ -197,7 +199,8 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
                 if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
                     return (True,nome,jogador)
                 else:
-                    return (False,nome,jogador)
+                    valor = (False,nome,jogador)
+    return valor
 
 ##################################################################################################################################
 
@@ -231,7 +234,7 @@ while start:
 
                 resultado_1 = verificar_linha_coluna_diagonal(matriz_de_jogadas, tamanho, tupla_1[0], tupla_1[1], tupla_1[2])
                 valor_1 = resultado_1[0]
-                resultado_2 = verificar_linha_coluna_diagonal(matriz_de_jogadas, tamanho, tupla_1[0], tupla_2[1], tupla_2[2])
+                resultado_2 = verificar_linha_coluna_diagonal(matriz_de_jogadas, tamanho, tupla_2[0], tupla_2[1], tupla_2[2])
                 valor_2 = resultado_2[0]
                 if valor_1 == True or valor_2 == True:
                     if valor_1 == True and valor_2 == True:
