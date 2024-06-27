@@ -1,4 +1,6 @@
 import os
+import csv
+import datetime
 import random as rd
 
 vermelho = '\033[91m'
@@ -6,12 +8,29 @@ azul = '\033[94m'
 verde = '\033[92m'
 reset = '\033[0m'
 
-# Este bloco de funções é responsável por imprimir o menu e retornar os valores correspondentes às opções
+############################################################################################################
+
+def limpar_tela():
+    sistema_operacional = os.name
+
+    if sistema_operacional == 'nt':  # Linux e macOS
+        os.system('cls')
+    else:
+        os.system('clear')
+
+def retornar():
+    sair = int(input("Digite zero para retornar ao menu principal: "))
+    while sair != 0:
+        limpar_tela()
+        sair = int(input("Digite zero para retornar ao menu principal: "))
+
+# Este bloco de funções é responsável por imprimir o menu e retornar os valores correspondentes ás opções
 
 def menu1():
     print("1 - Novo jogo\n", end='')
     print("2 - Continuar\n", end='')
-    print("3 - Sair do jogo\n", end='')
+    print("3 - Ranking\n", end='')
+    print("4 - Sair do jogo\n", end='')
     escolha = int(input("Selecionar: "))
     return escolha
 
@@ -87,13 +106,13 @@ def sorteio(jogador):
     print("\n")
     objetivo = rd.randint(1,4)
     if objetivo == 1:
-        print(cor + "Seu objetivo é formar uma sequência numérica ascendente\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica ascendente. Ex: 1,2,3 ou 7,8,9\n" + reset)
     elif objetivo == 2:
-        print(cor + "Seu objetivo é formar uma sequência numérica descendente\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica descendente. Ex: 3,2,1 ou 9,8,7\n" + reset)
     elif objetivo == 3:
-        print(cor + "Seu objetivo é formar uma sequência numérica par\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica par. Ex: 2,4,6 ou 8,6,4\n" + reset)
     else:
-        print(cor + "Seu objetivo é formar uma sequência numérica ímpar\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica ímpar. Ex: 1,3,5 ou 9,7,5\n" + reset)
     
     print(verde + f"Digite {jogador} para prosseguir: " + reset, end='')
     aux = int(input())
@@ -146,6 +165,16 @@ def verificar_lista(lista, objetivo):
             resultado = True
     if resultado == True:
         return resultado
+    
+def verificar_par_impar_descendencia(lista):
+    for k in range(len(lista) - 1):
+        if lista[k+1] - lista[k] != -2:
+            resultado = False
+            break
+        else:
+            resultado = True
+    if resultado == True:
+        return resultado
 
 def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador):
     for i in range(1, tamanho + 1):
@@ -184,7 +213,14 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
                 resultado_coluna = verificar_lista(coluna, objetivo)
                 resultado_principal = verificar_lista(principal, objetivo)
                 resultado_secundaria = verificar_lista(secundaria, objetivo)
+                
+                linha_descendente = verificar_par_impar_descendencia(linha)
+                coluna_descendente = verificar_par_impar_descendencia(coluna)
+                principal_descendente = verificar_par_impar_descendencia(principal)
+                secundaria_descendente = verificar_par_impar_descendencia(secundaria)
                 if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
+                    return (True,nome,jogador)
+                elif linha_descendente == True or coluna_descendente == True or principal_descendente == True or secundaria_descendente == True:
                     return (True,nome,jogador)
                 else:
                     valor = (False,nome,jogador)
@@ -194,7 +230,14 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
                 resultado_coluna = verificar_lista(coluna, objetivo)
                 resultado_principal = verificar_lista(principal, objetivo)
                 resultado_secundaria = verificar_lista(secundaria, objetivo)
+
+                linha_descendente = verificar_par_impar_descendencia(linha)
+                coluna_descendente = verificar_par_impar_descendencia(coluna)
+                principal_descendente = verificar_par_impar_descendencia(principal)
+                secundaria_descendente = verificar_par_impar_descendencia(secundaria)
                 if resultado_linha == True or resultado_coluna == True or resultado_principal == True or resultado_secundaria == True:
+                    return (True,nome,jogador)
+                elif linha_descendente == True or coluna_descendente == True or principal_descendente == True or secundaria_descendente == True:
                     return (True,nome,jogador)
                 else:
                     valor = (False,nome,jogador)
@@ -202,18 +245,41 @@ def verificar_linha_coluna_diagonal(dicionario, tamanho, objetivo, nome, jogador
 
 ##################################################################################################################################
 
+def data_atual():
+    hoje = datetime.date.today()
+    data_formatada = hoje.strftime('%d/%m/%Y')
+    return data_formatada
+
+def ranking(nome, nivel, data):
+    pontuaçao = []
+    pontos = 10*nivel
+    pontuaçao.append(nome)
+    pontuaçao.append(str(pontos) + "pts.")
+    pontuaçao.append(data)
+    try:
+        with open('ranking', 'a', newline='', encoding='utf-8') as rank:
+            escritor = csv.writer(rank)
+            escritor.writerow(pontuaçao)
+    except FileNotFoundError:
+        with open("ranking", 'a', newline='', encoding='utf-8') as rank:
+            escritor = csv.writer(rank)
+            escritor.writerow(['nome', 'pontos', 'data'])
+            escritor.writerow(pontuaçao)
+
+##################################################################################################################################
 start = True
 while start:
+    limpar_tela()
     escolha = menu1()
-    os.system('clear')
+    limpar_tela()
     if escolha == 1:
         opcao = menu2()
         rodar = True
-        os.system('clear')
+        limpar_tela()
         tupla_1 = sorteio(1)
-        os.system('clear')
+        limpar_tela()
         tupla_2 = sorteio(2)
-        os.system('clear')
+        limpar_tela()
         jogador = rd.randint(1,2)
         matriz_visual, matriz_de_jogadas, tamanho = nivel(opcao)
         imprimir_tela(formatar_tela(tamanho, matriz_visual))
@@ -222,7 +288,7 @@ while start:
             valor = jogada(matriz_visual, jogador, numeros, tupla_1[1], tupla_2[1])
             resultado = False
             if valor == None:
-                os.system('clear')
+                limpar_tela()
                 imprimir_tela(formatar_tela(tamanho, matriz_visual)) 
                 print("Não é possível fazer essa jogada\n")       
             else:
@@ -236,7 +302,6 @@ while start:
                 valor_2 = resultado_2[0]
                 if valor_1 == True or valor_2 == True:
                     if valor_1 == True and valor_2 == True:
-                        resultado = True
                         if jogador == 1:
                             nome = tupla_1[1]
                         else:
@@ -244,35 +309,59 @@ while start:
                     elif valor_1 == True:
                         nome = tupla_1[1]
                         jogador = tupla_1[2]
-                        resultado = True
                     else:
                         nome = tupla_2[1]
                         jogador = tupla_2[2]
-                        resultado = True
+                    
+                    resultado = True
+
                 else:
                     None
 
                 if resultado == True:
-                    os.system('clear')
+                    limpar_tela()
                     imprimir_tela(formatar_tela(tamanho, matriz_visual))
                     print(f"O vencedor foi o jogador {jogador}, {nome}\n")
+                    data = data_atual()
+                    ranking(nome, opcao, data)
+                    retornar()
                     rodar = False
                 
+                elif len(numeros) == 0:
+                    limpar_tela()
+                    imprimir_tela(formatar_tela(tamanho, matriz_visual))
+                    print("Empate\n")
+                    retornar()
+                    rodar = False
+
                 else:
-                    os.system('clear')
+                    limpar_tela()
                     imprimir_tela(formatar_tela(tamanho, matriz_visual))
                     if jogador == 1:
                         jogador = 2
-                        nome = tupla_2[1]
                     else:
                         jogador = 1
-                        nome = tupla_1[1]
                 
     elif escolha == 2:
         print("Continuar jogo")
     
     elif escolha == 3:
-        start = False
+        limpar_tela()
+        try:
+            with open('ranking', 'r', newline='', encoding='utf-8') as rank:
+                leitor = csv.reader(rank)
+                for item in leitor:
+                    for campos in item:
+                        print(f"{(verde + str(campos) + reset)}", end='\t')
+                    print("\n")
+            retornar()
+            
+        except FileNotFoundError:
+            print("Não há ranking disponível\n")
+            retornar()
     
+    elif escolha == 4:
+        limpar_tela()
+        start = False
     else:
         print("DIgite valores válidos\n")
