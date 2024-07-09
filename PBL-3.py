@@ -33,7 +33,7 @@ Este bloco é responsável essencialmmente pela parte interativa do jogo, como m
 def limpar_tela():
     sistema_operacional = os.name
 
-    if sistema_operacional == 'nt':  # Linux e macOS
+    if sistema_operacional == 'nt':
         os.system('cls')
     else:
         os.system('clear')
@@ -171,13 +171,13 @@ def sorteio(jogador, especial):
     print("\n")
     objetivo = rd.randint(1,4)
     if objetivo == 1:
-        print(cor + "Seu objetivo é formar uma sequência numérica ascendente. Ex: 1,2,3 ou 7,8,9\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica ascendente. Ex: 1,2,3. ou 7,8,9.\n" + reset)
     elif objetivo == 2:
-        print(cor + "Seu objetivo é formar uma sequência numérica descendente. Ex: 3,2,1 ou 9,8,7\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica descendente. Ex: 3,2,1. ou 9,8,7.\n" + reset)
     elif objetivo == 3:
-        print(cor + "Seu objetivo é formar uma sequência numérica par. Ex: 2,4,6 ou 8,6,4\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica par. Ex: 2,4,6. ou 8,6,4.\n" + reset)
     else:
-        print(cor + "Seu objetivo é formar uma sequência numérica ímpar. Ex: 1,3,5 ou 9,7,5\n" + reset)
+        print(cor + "Seu objetivo é formar uma sequência numérica ímpar. Ex: 1,3,5. ou 9,7,5.\n" + reset)
     
     print(verde + f"Digite {jogador} para prosseguir: " + reset, end='')
     aux = int(input())
@@ -424,15 +424,14 @@ def ranking(nome, nivel):
             else:
                 pass
         
-        if busca == False:
-            pontuaçao.append(nome)
-            pontuaçao.append(pontos)
-            rank_matriz.append(pontuaçao)
-            with open('ranking', 'w', newline='', encoding='utf-8') as rank:
+        with open('ranking', 'w', newline='', encoding='utf-8') as rank:
+            if busca == False:
+                pontuaçao.append(nome)
+                pontuaçao.append(pontos)
+                rank_matriz.append(pontuaçao)
                 escritor = csv.writer(rank)
                 escritor.writerows(rank_matriz)
-        else:
-            with open('ranking', 'w', newline='', encoding='utf-8') as rank:
+            else:
                 escritor = csv.writer(rank)
                 escritor.writerows(rank_matriz)
 
@@ -441,16 +440,41 @@ def ranking(nome, nivel):
             escritor = csv.writer(rank)
             pontuaçao.append(nome)
             pontuaçao.append(pontos)
-            escritor.writerow(['Nome', 'Pontos'])
             escritor.writerow(pontuaçao)
 
-def imprimir_ranking():
+def ordenar_ranking():
+
+    matriz_aux = []
+
     with open('ranking', 'r', newline='', encoding='utf-8') as rank:
-        leitor = csv.reader(rank)
-        for item in leitor:
-            for campos in item:
-                print(f"{(verde + str(campos) + reset)}", end='\t')
-            print("\n")
+        matriz = csv.reader(rank)
+        for item in matriz:
+            matriz_aux.append(item)
+
+    matriz_ordenada = []
+    pontos = []
+
+    for item in matriz_aux:
+        pontos.append(item[1])
+    
+    pontos.sort()
+    pontos.reverse()
+    cabecalho = ['Posição', 'Nome', 'Pontos']
+
+    for valor in pontos:
+        for item in matriz_aux:
+            if valor == item[1]:
+                matriz_ordenada.append(item)
+                posicao = matriz_ordenada.index(item)
+                item.insert(0, posicao + 1)
+    matriz_ordenada.insert(0, cabecalho)
+    return matriz_ordenada
+
+def imprimir_ranking(matriz):
+    for item in matriz:
+        for campos in item:
+            print(f"{(verde + str(campos) + reset)}", end='\t')
+        print("\n")
 
 """Bloco responsável por salvar o jogo e lê-lo para continuar. Aqui, o arquivo utilizada foi o pickle, que lida melhor com tuplas"""
 
@@ -569,6 +593,9 @@ def jogo(matriz_de_jogadas, matriz_visual, tamanho, jogador, especial, tupla_1, 
             else:
                 jogador = 1
             salvar = menu5()
+            limpar_tela()
+            imprimir_tela(formatar_tela(tamanho, matriz_visual))
+            imprimir_numeros(numeros_jogados, numeros)
             if salvar == 1:
                 salvar_jogo(matriz_de_jogadas, matriz_visual, tamanho, jogador, especial, tupla_1, tupla_2, numeros, numeros_jogados, opcao)
                 return jogador, False
@@ -615,7 +642,8 @@ while start:
     elif escolha == 3:
         limpar_tela()
         try:
-            imprimir_ranking()
+            matriz_ranking = ordenar_ranking()
+            imprimir_ranking(matriz_ranking)
             retornar()
             
         except FileNotFoundError:
